@@ -90,6 +90,29 @@
       <el-table-column prop="createTime" label="创建时间" />
 
       <el-table-column label="操作" width="230" align="center">
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.status == 1"
+            type="primary"
+            size="mini"
+            @click="updateStatus(scope.row.id, 0)"
+            >下线</el-button
+          >
+          <el-button
+            v-if="scope.row.status == 0"
+            type="danger"
+            size="mini"
+            @click="updateStatus(scope.row.id, 1)"
+            >上线</el-button
+          >
+          <router-link :to="'/hospital/show/' + scope.row.id">
+            <el-button type="primary" size="mini">查看</el-button>
+          </router-link>
+
+          <router-link :to="'/hospital/schedule/' + scope.row.hoscode">
+            <el-button type="primary" size="mini">排班</el-button>
+          </router-link>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -162,10 +185,18 @@ export default {
         });
     },
 
-    resetData() {},
+    resetData() {
+      this.searchObj = {};
+      this.getPageList(1);
+    },
     changeSize(size) {
       this.limit = size;
       this.getPageList();
+    },
+    updateStatus(id, status) {
+      hospitalApi.updateStatus(id, status).then(response => {
+        this.getPageList();
+      });
     }
   }
 };
